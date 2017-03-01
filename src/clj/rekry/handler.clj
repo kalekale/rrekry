@@ -16,6 +16,9 @@
 
 (defonce msgs-out (s/stream))
 
+(def clients
+  (atom {})) 
+
 (let [max-id (atom 0)]
   (defn next-id []
     (swap! max-id inc)))
@@ -31,18 +34,21 @@
 (defn new-msg [req res raise]
   (let [{:keys [message author channel]} (json/read-json (slurp (:body req)))
         data {:message message :author author :channel channel :id (next-id)}]
-    @(s/try-put! msgs-out data 100 nil)
     (dosync (alter all-msgs conj data))
+    (doseq [s (keys @clients)]
+      (s/put! s data))
     (res {:status 200 :headers {}})))
 
 (defn s-handler
   [req res raise]
   (let [id (Integer/valueOf (:query-string req))
         msgs (get-msgs id)]
-    (print id)
     (if (seq msgs)
-      (res {:status 200 :body (json/json-str msgs)})
-       (s/consume #(res (hash-map :statsu 200 :body (json/write-str [%]))) msgs-out))))
+      (res {:status  200 :body (json/json-str msgs)})
+      (let [stream (s/stream)]
+        (swap! clients assoc stream id)
+        (d/let-flow [msg (s/take! stream)]
+          (res {:status 200 :body (json/write-str [msg])}))))))
 
 
 (defroutes routes
