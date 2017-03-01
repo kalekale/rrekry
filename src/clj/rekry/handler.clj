@@ -31,9 +31,8 @@
 (defn new-msg [req res raise]
   (let [{:keys [message author channel]} (json/read-json (slurp (:body req)))
         data {:message message :author author :channel channel :id (next-id)}]
-    (print data)
+    @(s/try-put! msgs-out data 100 nil)
     (dosync (alter all-msgs conj data))
-    (s/put! msgs-out data)
     (res {:status 200 :headers {}})))
 
 (defn s-handler
@@ -43,8 +42,7 @@
     (print id)
     (if (seq msgs)
       (res {:status 200 :body (json/json-str msgs)})
-  (s/take!
-   (s/map #(res (hash-map :status 200 :body (json/json-str [%]))) msgs-out)))))
+       (s/consume #(res (hash-map :statsu 200 :body (json/write-str [%]))) msgs-out))))
 
 
 (defroutes routes
@@ -58,4 +56,4 @@
   (resources "/"))
 
 
-(def handler (wrap-foo #'routes "heihei"))
+(def handler #'routes)
