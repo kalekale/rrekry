@@ -44,7 +44,8 @@
         nick-info-text (re-frame/subscribe [:nick-info-text])]
     (fn []
       [:div
-       [:input {:on-change #(re-frame/dispatch  [:message-changed (-> % .-target .-value)])}]
+       [:input {:on-change #(re-frame/dispatch  [:message-changed (-> % .-target .-value)])
+                :value @message}]
        [:input (merge {:type "submit"
                        :value "Send message"
                        :on-click #(re-frame/dispatch  [:send-message])}
