@@ -1,5 +1,7 @@
 # rekry
 
+Try it on heroku: https://damp-peak-64915.herokuapp.com/
+
 ## Build
 
 ```
