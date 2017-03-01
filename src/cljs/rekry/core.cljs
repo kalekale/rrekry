@@ -20,6 +20,7 @@
 
 (defn ^:export init []
   (routes/app-routes)
+  (enable-console-print!)
   (re-frame/dispatch-sync [:initialize-db])
   (dev-setup)
   (mount-root))
