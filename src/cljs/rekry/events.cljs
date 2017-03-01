@@ -111,7 +111,8 @@
                  :format (ajax/json-request-format)
                  :response-format :text
                  :on-success  [:bad-http-res]
-                 :on-failure     [:bad-http-res]}}))
+                 :on-failure     [:bad-http-res]}
+    :db         (assoc (:db world) :message "")}))
 
 (re-frame/reg-event-fx
  :success-messages
