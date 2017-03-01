@@ -97,7 +97,7 @@
                  :uri    (str "/poll-msgs" "?" (:max-id (:db world)))
                  :response-format (ajax/json-response-format {:keywords? true})
                  :on-success  [:poll-success]
-                 :on-failure     [:bad-http-res]}}))
+                 :on-failure     [:poll-msgs]}}))
 
 (re-frame/reg-event-fx
  :send-message
