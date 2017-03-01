@@ -14,7 +14,7 @@
             [rekry.middleware :refer :all]
             ))
 
-(def msgs-out (s/stream))
+(defonce msgs-out (s/stream))
 
 (let [max-id (atom 0)]
   (defn next-id []
